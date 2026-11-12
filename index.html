@@ -10,6 +10,8 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased">
@@ -28,26 +30,26 @@
                 </div>
             </div>
             <nav class="flex-1 p-4 space-y-1.5 overflow-y-auto">
-                <a href="#overview" onclick="switchTab('overview')" class="nav-item flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 transition-all">
+                <button onclick="switchTab('overview', this)" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 transition-all text-left">
                     <i class="fa-solid fa-chart-pie w-5"></i>
                     <span>Visão Geral</span>
-                </a>
-                <a href="#discord" onclick="switchTab('discord')" class="nav-item flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 transition-all">
+                </button>
+                <button onclick="switchTab('discord', this)" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 transition-all text-left">
                     <i class="fa-brands fa-discord w-5"></i>
                     <span>Conexão & Webhook</span>
-                </a>
-                <a href="#commands" onclick="switchTab('commands')" class="nav-item flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 transition-all">
+                </button>
+                <button onclick="switchTab('commands', this)" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 transition-all text-left">
                     <i class="fa-solid fa-terminal w-5"></i>
                     <span>Comandos da Staff</span>
-                </a>
-                <a href="#analytics" onclick="switchTab('analytics')" class="nav-item flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 transition-all">
+                </button>
+                <button onclick="switchTab('analytics', this)" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 transition-all text-left">
                     <i class="fa-solid fa-chart-line w-5"></i>
                     <span>Estatísticas</span>
-                </a>
-                <a href="#logs" onclick="switchTab('logs')" class="nav-item flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 transition-all">
+                </button>
+                <button onclick="switchTab('logs', this)" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 transition-all text-left">
                     <i class="fa-solid fa-shield-halved w-5"></i>
                     <span>Logs de Auditoria</span>
-                </a>
+                </button>
             </nav>
             <div class="p-4 border-t border-slate-800">
                 <a href="https://discord.gg/cia4" target="_blank" class="flex items-center justify-center space-x-2 w-full bg-indigo-600 hover:bg-indigo-500 text-white py-2.5 px-4 rounded-xl text-sm font-semibold transition-all shadow-md">
@@ -80,7 +82,7 @@
                         <i id="themeIcon" class="fa-solid fa-sun text-sm"></i>
                     </button>
                     <div class="flex items-center space-x-3 pl-3 border-l border-slate-800">
-                        <button onclick="changeAdminName()" class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-white text-sm hover:bg-indigo-500 transition-all shadow-sm" title="Alterar Nome do Admin">ADM</button>
+                        <button onclick="changeAdminName()" class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-white text-sm hover:bg-indigo-500 transition-all shadow-sm" title="Alterar Nome">ADM</button>
                         <div class="hidden md:block text-left">
                             <div id="welcomeAdminText" class="text-xs font-semibold text-slate-200">Bem-vindo de volta, mestre, Administrador</div>
                             <div class="text-[10px] text-emerald-400 flex items-center gap-1">
@@ -94,7 +96,7 @@
             <!-- Content Area -->
             <main class="flex-1 overflow-y-auto p-6 space-y-6">
                 <!-- TAB: OVERVIEW -->
-                <div id="tab-overview" class="space-y-6 tab-content">
+                <div id="tab-overview" class="tab-content active space-y-6">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div>
                             <h2 class="text-xl font-bold tracking-tight text-white">Dashboard da Comunidade</h2>
@@ -195,7 +197,7 @@
                 </div>
 
                 <!-- TAB: DISCORD & WEBHOOK -->
-                <div id="tab-discord" class="space-y-6 tab-content hidden">
+                <div id="tab-discord" class="tab-content space-y-6">
                     <div>
                         <h2 class="text-xl font-bold tracking-tight text-white">Gerenciamento de Webhook & Conexão</h2>
                         <p class="text-xs text-slate-400">Envie mensagens customizadas direto para o canal da CIA no Discord.</p>
@@ -263,4 +265,329 @@
                                         CIA
                                     </div>
                                     <div class="flex-1 space-y-1">
-                   
+                                        <div class="flex items-center space-x-2">
+                                            <span id="prevBotName" class="font-semibold text-sm text-white">CIA Bot</span>
+                                            <span class="bg-[#5865F2] text-white text-[10px] px-1 rounded font-medium">BOT</span>
+                                            <span class="text-[10px] text-slate-400">Hoje às 14:39</span>
+                                        </div>
+                                        <div id="discordEmbedCard" class="bg-[#2b2d31] border-l-4 border-indigo-600 rounded p-3 max-w-md space-y-2">
+                                            <div id="prevTitle" class="font-bold text-sm text-white">Título do Anúncio</div>
+                                            <div id="prevDesc" class="text-xs text-slate-300 leading-relaxed">O conteúdo da mensagem aparecerá aqui em tempo real conforme você digita no construtor ao lado.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB: COMMANDS -->
+                <div id="tab-commands" class="tab-content space-y-6">
+                    <div>
+                        <h2 class="text-xl font-bold tracking-tight text-white">Comandos e Ações da Staff</h2>
+                        <p class="text-xs text-slate-400">Dispare comandos rápidos de moderação e automação para o servidor.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-5 flex flex-col justify-between">
+                            <div>
+                                <div class="w-10 h-10 rounded-xl bg-indigo-600/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 mb-3">
+                                    <i class="fa-solid fa-bullhorn"></i>
+                                </div>
+                                <h3 class="font-bold text-white text-sm">Aviso Geral</h3>
+                                <p class="text-xs text-slate-400 mt-1">Dispara um comunicado padrão para o canal principal.</p>
+                            </div>
+                            <button onclick="runCommand('Aviso Geral', 'Atenção membros! Verifiquem os comunicados oficiais.')" class="mt-4 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium py-2 rounded-xl transition-all">Executar</button>
+                        </div>
+                        <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-5 flex flex-col justify-between">
+                            <div>
+                                <div class="w-10 h-10 rounded-xl bg-emerald-600/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-3">
+                                    <i class="fa-solid fa-gift"></i>
+                                </div>
+                                <h3 class="font-bold text-white text-sm">Sorteio Flash</h3>
+                                <p class="text-xs text-slate-400 mt-1">Inicia um sorteio relâmpago no servidor da CIA.</p>
+                            </div>
+                            <button onclick="runCommand('Sorteio Flash', '🎉 Sorteio relâmpago iniciado! Reaja para participar.')" class="mt-4 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium py-2 rounded-xl transition-all">Executar</button>
+                        </div>
+                        <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-5 flex flex-col justify-between">
+                            <div>
+                                <div class="w-10 h-10 rounded-xl bg-amber-600/10 border border-amber-500/20 flex items-center justify-center text-amber-400 mb-3">
+                                    <i class="fa-solid fa-book"></i>
+                                </div>
+                                <h3 class="font-bold text-white text-sm">Regras do Servidor</h3>
+                                <p class="text-xs text-slate-400 mt-1">Publica o sumário de diretrizes da comunidade.</p>
+                            </div>
+                            <button onclick="runCommand('Regras', '📜 Respeito mútuo, sem spam e siga os termos do Discord.')" class="mt-4 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium py-2 rounded-xl transition-all">Executar</button>
+                        </div>
+                        <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-5 flex flex-col justify-between">
+                            <div>
+                                <div class="w-10 h-10 rounded-xl bg-red-600/10 border border-red-500/20 flex items-center justify-center text-red-400 mb-3">
+                                    <i class="fa-solid fa-broom"></i>
+                                </div>
+                                <h3 class="font-bold text-white text-sm">Limpeza de Chat</h3>
+                                <p class="text-xs text-slate-400 mt-1">Envia log de auditoria de limpeza realizada.</p>
+                            </div>
+                            <button onclick="runCommand('Limpeza', '🧹 Este canal teve o chat limpo recentemente pela moderação.')" class="mt-4 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium py-2 rounded-xl transition-all">Executar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB: ANALYTICS -->
+                <div id="tab-analytics" class="tab-content space-y-6">
+                    <div>
+                        <h2 class="text-xl font-bold tracking-tight text-white">Estatísticas Avançadas</h2>
+                        <p class="text-xs text-slate-400">Métricas detalhadas de tráfego do servidor discord.gg/cia4.</p>
+                    </div>
+                    <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-5">
+                        <div class="h-80">
+                            <canvas id="advancedChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB: LOGS -->
+                <div id="tab-logs" class="tab-content space-y-6">
+                    <div>
+                        <h2 class="text-xl font-bold tracking-tight text-white">Logs de Auditoria</h2>
+                        <p class="text-xs text-slate-400">Histórico de ações recentes executadas no painel da CIA.</p>
+                    </div>
+                    <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-800 text-[11px] font-semibold text-slate-400 uppercase bg-slate-950/40">
+                                    <th class="p-4">Ação</th>
+                                    <th class="p-4">Alvo / Canal</th>
+                                    <th class="p-4">Status</th>
+                                    <th class="p-4">Horário</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logsTableBody" class="divide-y divide-slate-800/60 text-xs text-slate-300">
+                                <tr>
+                                    <td class="p-4 font-medium text-white">Inicialização do Painel</td>
+                                    <td class="p-4 text-slate-400">discord.gg/cia4</td>
+                                    <td class="p-4"><span class="bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full text-[10px] font-semibold">Sucesso</span></td>
+                                    <td class="p-4 text-slate-400">Agora mesmo</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const DEFAULT_WEBHOOK = "https://discord.com/api/webhooks/1570490216290975954/CxFxtpk20Th2IB_1kpOUHKTKiVTVp4lKHGfsuzJsbe9mYtoA37fxF0BTwmtpAEk_Jo8V";
+        
+        let webhookUrl = localStorage.getItem('cia_webhook') || DEFAULT_WEBHOOK;
+        document.getElementById('webhookUrlInput').value = webhookUrl;
+
+        let adminName = localStorage.getItem('cia_admin_name') || 'Administrador';
+        updateAdminWelcome(adminName);
+
+        function changeAdminName() {
+            const newName = prompt("Digite o seu nome de Administrador:", adminName);
+            if (newName && newName.trim() !== "") {
+                adminName = newName.trim();
+                localStorage.setItem('cia_admin_name', adminName);
+                updateAdminWelcome(adminName);
+                addLog("Alteração de Perfil", adminName, "Sucesso");
+            }
+        }
+
+        function updateAdminWelcome(name) {
+            document.getElementById('welcomeAdminText').innerText = `Bem-vindo de volta, mestre, ${name}`;
+        }
+
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+            
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.classList.remove('bg-indigo-600', 'text-white', 'shadow-lg', 'shadow-indigo-600/20');
+                el.classList.add('text-slate-400', 'hover:text-slate-100', 'hover:bg-slate-800/60');
+            });
+            if(element) {
+                element.classList.add('bg-indigo-600', 'text-white', 'shadow-lg', 'shadow-indigo-600/20');
+                element.classList.remove('text-slate-400', 'hover:text-slate-100', 'hover:bg-slate-800/60');
+            }
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('w-64');
+            sidebar.classList.toggle('w-20');
+        }
+
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+            const icon = document.getElementById('themeIcon');
+            icon.classList.toggle('fa-sun');
+            icon.classList.toggle('fa-moon');
+        }
+
+        function toggleWebhookVisibility() {
+            const input = document.getElementById('webhookUrlInput');
+            const icon = document.getElementById('eyeIcon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+
+        function resetDefaultWebhook() {
+            document.getElementById('webhookUrlInput').value = DEFAULT_WEBHOOK;
+            localStorage.setItem('cia_webhook', DEFAULT_WEBHOOK);
+            addLog("Restaurar Webhook", "CIA Padrão", "Sucesso");
+            alert("Webhook padrão da CIA restaurado com sucesso!");
+        }
+
+        async function fetchDiscordWidget() {
+            const syncIcon = document.getElementById('syncIcon');
+            syncIcon.classList.add('fa-spin');
+            try {
+                const res = await fetch('https://discord.com/api/v10/invites/cia4?with_counts=true');
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('kpiMembersTotal').innerText = data.approximate_member_count?.toLocaleString() || '1,420';
+                    document.getElementById('kpiMembersOnline').innerText = data.approximate_presence_count?.toLocaleString() || '380';
+                } else {
+                    throw new Error();
+                }
+            } catch {
+                document.getElementById('kpiMembersTotal').innerText = '1,420';
+                document.getElementById('kpiMembersOnline').innerText = '380';
+            }
+            setTimeout(() => {
+                syncIcon.classList.remove('fa-spin');
+                addLog("Sincronização Widget", "discord.gg/cia4", "Sucesso");
+            }, 500);
+        }
+
+        async function testWebhookGet() {
+            const url = document.getElementById('webhookUrlInput').value;
+            localStorage.setItem('cia_webhook', url);
+            const statusText = document.getElementById('webhookStatusText');
+            statusText.innerText = "Testando...";
+            try {
+                const res = await fetch(url);
+                if (res.ok) {
+                    const data = await res.json();
+                    statusText.innerText = `Conectado! Canal: #${data.name || 'Desconhecido'}`;
+                    statusText.className = "text-xs self-center text-emerald-400 font-medium";
+                    addLog("Teste GET Webhook", data.name || "Canal Webhook", "Sucesso");
+                } else {
+                    throw new Error();
+                }
+            } catch {
+                statusText.innerText = "Erro ao conectar (CORS ou URL inválida)";
+                statusText.className = "text-xs self-center text-red-400 font-medium";
+                addLog("Teste GET Webhook", "Webhook CIA", "Falha");
+            }
+        }
+
+        async function quickSendWebhook() {
+            const text = document.getElementById('quickMsgInput').value;
+            if (!text) return alert("Digite uma mensagem rápida!");
+            const url = document.getElementById('webhookUrlInput').value;
+            
+            try {
+                await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ content: text, username: "CIA Painel" })
+                });
+                document.getElementById('quickMsgInput').value = "";
+                alert("Mensagem enviada com sucesso para o servidor CIA!");
+                addLog("Envio Rápido", "Canal Discord", "Sucesso");
+            } catch {
+                alert("Erro ao enviar mensagem via Webhook.");
+                addLog("Envio Rápido", "Canal Discord", "Falha");
+            }
+        }
+
+        async function runCommand(title, desc) {
+            const url = document.getElementById('webhookUrlInput').value;
+            const payload = {
+                username: "CIA Staff Bot",
+                embeds: [{
+                    title: `⚡ Comando: ${title}`,
+                    description: desc,
+                    color: 5242885,
+                    footer: { text: `Executado por ${adminName} • Painel CIA` },
+                    timestamp: new Date().toISOString()
+                }]
+            };
+
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                if (res.ok || res.status === 204) {
+                    alert(`Comando "${title}" executado com sucesso no servidor!`);
+                    addLog(`Comando: ${title}`, "Canal Discord", "Sucesso");
+                } else {
+                    alert("Erro ao disparar comando.");
+                    addLog(`Comando: ${title}`, "Canal Discord", "Falha");
+                }
+            } catch {
+                alert("Erro de conexão ao executar comando.");
+            }
+        }
+
+        function addLog(action, target, status) {
+            const tbody = document.getElementById('logsTableBody');
+            const row = document.createElement('tr');
+            const statusClass = status === 'Sucesso' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400';
+            row.innerHTML = `
+                <td class="p-4 font-medium text-white">${action}</td>
+                <td class="p-4 text-slate-400">${target}</td>
+                <td class="p-4"><span class="${statusClass} px-2 py-0.5 rounded-full text-[10px] font-semibold">${status}</span></td>
+                <td class="p-4 text-slate-400">Agora mesmo</td>
+            `;
+            tbody.prepend(row);
+        }
+
+        // Charts initialization
+        const ctxEngagement = document.getElementById('engagementChart').getContext('2d');
+        new Chart(ctxEngagement, {
+            type: 'line',
+            data: {
+                labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+                datasets: [{
+                    label: 'Mensagens',
+                    data: [3200, 4100, 3900, 4820, 5600, 6800, 6100],
+                    borderColor: '#4f46e5',
+                    backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        });
+
+        const ctxAdvanced = document.getElementById('advancedChart').getContext('2d');
+        new Chart(ctxAdvanced, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out'],
+                datasets: [{
+                    label: 'Novos Membros',
+                    data: [120, 190, 300, 500, 420, 600, 750, 920, 1100, 1420],
+                    backgroundColor: '#4f46e5',
+                    borderRadius: 8
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+
+        fetchDiscordWidget();
+    </script>
+</body>
+</html>
+
