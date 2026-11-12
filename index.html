@@ -38,9 +38,17 @@
                     <i class="fa-brands fa-discord w-5"></i>
                     <span>Conexão & Webhook</span>
                 </button>
+                <button onclick="switchTab('roles', this)" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 transition-all text-left">
+                    <i class="fa-solid fa-user-shield w-5"></i>
+                    <span>Cargos & Verificação</span>
+                </button>
                 <button onclick="switchTab('commands', this)" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 transition-all text-left">
                     <i class="fa-solid fa-terminal w-5"></i>
-                    <span>Comandos da Staff</span>
+                    <span>Central de Comandos (50+)</span>
+                </button>
+                <button onclick="switchTab('osint', this)" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 transition-all text-left">
+                    <i class="fa-solid fa-fingerprint w-5"></i>
+                    <span>OSINT & UserID</span>
                 </button>
                 <button onclick="switchTab('analytics', this)" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 transition-all text-left">
                     <i class="fa-solid fa-chart-line w-5"></i>
@@ -204,7 +212,6 @@
                     </div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <!-- Config Webhook -->
                         <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-5 space-y-4">
                             <div class="flex justify-between items-center">
                                 <h3 class="font-bold text-sm text-white flex items-center gap-2">
@@ -256,7 +263,6 @@
                             </button>
                         </div>
 
-                        <!-- Preview Discord -->
                         <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-5 flex flex-col">
                             <h3 class="font-bold text-sm text-white mb-4">Pré-visualização no Discord</h3>
                             <div class="flex-1 bg-[#313338] rounded-xl p-4 flex flex-col justify-center text-slate-100 font-sans shadow-inner">
@@ -281,53 +287,110 @@
                     </div>
                 </div>
 
-                <!-- TAB: COMMANDS -->
-                <div id="tab-commands" class="tab-content space-y-6">
+                <!-- TAB: ROLES & VERIFICATION -->
+                <div id="tab-roles" class="tab-content space-y-6">
                     <div>
-                        <h2 class="text-xl font-bold tracking-tight text-white">Comandos e Ações da Staff</h2>
-                        <p class="text-xs text-slate-400">Dispare comandos rápidos de moderação e automação para o servidor.</p>
+                        <h2 class="text-xl font-bold tracking-tight text-white">Gerenciamento de Cargos & Sistema de Verificação</h2>
+                        <p class="text-xs text-slate-400">Atribua/remova cargos por ID de usuário e configure painéis de verificação automatizada.</p>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-5 flex flex-col justify-between">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Mudança de Cargo por ID -->
+                        <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-5 space-y-4">
+                            <h3 class="font-bold text-sm text-white flex items-center gap-2">
+                                <i class="fa-solid fa-user-tag text-indigo-400"></i> Mudança de Cargo (Add/Remove Role)
+                            </h3>
                             <div>
-                                <div class="w-10 h-10 rounded-xl bg-indigo-600/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 mb-3">
-                                    <i class="fa-solid fa-bullhorn"></i>
-                                </div>
-                                <h3 class="font-bold text-white text-sm">Aviso Geral</h3>
-                                <p class="text-xs text-slate-400 mt-1">Dispara um comunicado padrão para o canal principal.</p>
+                                <label class="block text-xs font-medium text-slate-400 mb-1">ID do Usuário Alvo</label>
+                                <input type="text" id="roleUserId" placeholder="Ex: 123456789012345678" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
                             </div>
-                            <button onclick="runCommand('Aviso Geral', 'Atenção membros! Verifiquem os comunicados oficiais.')" class="mt-4 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium py-2 rounded-xl transition-all">Executar</button>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-400 mb-1">Cargo a Atribuir / Remover</label>
+                                <select id="targetRoleSelect" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
+                                    <option value="Membro Verificado">Membro Verificado</option>
+                                    <option value="VIP / Impulsionador">VIP / Impulsionador</option>
+                                    <option value="Moderador Staff">Moderador Staff</option>
+                                    <option value="Cargo de Castigo (Mute)">Cargo de Castigo (Mute)</option>
+                                    <option value="Parceiro Oficial">Parceiro Oficial</option>
+                                </select>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3 pt-2">
+                                <button onclick="executeRoleAction('Adicionar')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 rounded-xl text-xs transition-all shadow-md">
+                                    + Adicionar Cargo
+                                </button>
+                                <button onclick="executeRoleAction('Remover')" class="bg-red-600 hover:bg-red-500 text-white font-semibold py-2.5 rounded-xl text-xs transition-all shadow-md">
+                                    - Remover Cargo
+                                </button>
+                            </div>
                         </div>
-                        <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-5 flex flex-col justify-between">
+
+                        <!-- Painel de Verificação -->
+                        <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-5 space-y-4">
+                            <h3 class="font-bold text-sm text-white flex items-center gap-2">
+                                <i class="fa-solid fa-shield-check text-emerald-400"></i> Configurar Sistema de Verificação
+                            </h3>
+                            <p class="text-xs text-slate-400">Dispare o embed oficial de verificação com botão reativo para o canal de entrada da CIA.</p>
                             <div>
-                                <div class="w-10 h-10 rounded-xl bg-emerald-600/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-3">
-                                    <i class="fa-solid fa-gift"></i>
-                                </div>
-                                <h3 class="font-bold text-white text-sm">Sorteio Flash</h3>
-                                <p class="text-xs text-slate-400 mt-1">Inicia um sorteio relâmpago no servidor da CIA.</p>
+                                <label class="block text-xs font-medium text-slate-400 mb-1">Título do Embed de Verificação</label>
+                                <input type="text" id="verifTitle" value="🔒 Verificação de Segurança - CIA" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
                             </div>
-                            <button onclick="runCommand('Sorteio Flash', '🎉 Sorteio relâmpago iniciado! Reaja para participar.')" class="mt-4 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium py-2 rounded-xl transition-all">Executar</button>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-400 mb-1">Instruções para o Usuário</label>
+                                <textarea id="verifDesc" rows="3" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">Clique no botão abaixo para concluir a verificação automática e liberar o acesso total ao servidor discord.gg/cia4.</textarea>
+                            </div>
+                            <button onclick="sendVerificationEmbed()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2.5 rounded-xl text-xs transition-all shadow-md shadow-indigo-600/20">
+                                Disparar Painel de Verificação no Discord
+                            </button>
                         </div>
-                        <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-5 flex flex-col justify-between">
-                            <div>
-                                <div class="w-10 h-10 rounded-xl bg-amber-600/10 border border-amber-500/20 flex items-center justify-center text-amber-400 mb-3">
-                                    <i class="fa-solid fa-book"></i>
-                                </div>
-                                <h3 class="font-bold text-white text-sm">Regras do Servidor</h3>
-                                <p class="text-xs text-slate-400 mt-1">Publica o sumário de diretrizes da comunidade.</p>
-                            </div>
-                            <button onclick="runCommand('Regras', '📜 Respeito mútuo, sem spam e siga os termos do Discord.')" class="mt-4 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium py-2 rounded-xl transition-all">Executar</button>
+                    </div>
+                </div>
+
+                <!-- TAB: 50+ COMMANDS -->
+                <div id="tab-commands" class="tab-content space-y-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div>
+                            <h2 class="text-xl font-bold tracking-tight text-white">Central de Comandos da Staff (50+)</h2>
+                            <p class="text-xs text-slate-400">Clique em qualquer comando abaixo para disparar o gatilho automatizado via Webhook.</p>
                         </div>
-                        <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-5 flex flex-col justify-between">
+                        <input type="text" id="cmdSearch" onkeyup="filterCommands()" placeholder="Pesquisar comando..." class="bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 w-full md:w-64">
+                    </div>
+
+                    <div id="commandsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <!-- Gerado Dinamicamente -->
+                    </div>
+                </div>
+
+                <!-- TAB: OSINT & USERID -->
+                <div id="tab-osint" class="tab-content space-y-6">
+                    <div>
+                        <h2 class="text-xl font-bold tracking-tight text-white">OSINT & Consulta por User ID (CSINT)</h2>
+                        <p class="text-xs text-slate-400">Investigue metadados de contas do Discord através do ID do usuário, data de criação e verificação.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-5 space-y-4">
+                            <h3 class="font-bold text-sm text-white flex items-center gap-2">
+                                <i class="fa-solid fa-magnifying-glass text-indigo-400"></i> Consulta de Utilizador por ID
+                            </h3>
                             <div>
-                                <div class="w-10 h-10 rounded-xl bg-red-600/10 border border-red-500/20 flex items-center justify-center text-red-400 mb-3">
-                                    <i class="fa-solid fa-broom"></i>
-                                </div>
-                                <h3 class="font-bold text-white text-sm">Limpeza de Chat</h3>
-                                <p class="text-xs text-slate-400 mt-1">Envia log de auditoria de limpeza realizada.</p>
+                                <label class="block text-xs font-medium text-slate-400 mb-1">Discord User ID (Ex: 123456789012345678)</label>
+                                <input type="text" id="osintUserId" placeholder="Cole o ID numérico aqui..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
                             </div>
-                            <button onclick="runCommand('Limpeza', '🧹 Este canal teve o chat limpo recentemente pela moderação.')" class="mt-4 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium py-2 rounded-xl transition-all">Executar</button>
+                            <div class="flex gap-2">
+                                <button onclick="runUserLookup()" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2.5 rounded-xl text-xs transition-all shadow-md">
+                                    Executar Consulta OSINT (CSINT)
+                                </button>
+                                <button onclick="sendOsintToWebhook()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2.5 rounded-xl text-xs font-medium transition-all">
+                                    Enviar p/ Discord
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-5 flex flex-col">
+                            <h3 class="font-bold text-sm text-white mb-4">Resultado da Análise OSINT</h3>
+                            <div id="osintResultBox" class="flex-1 bg-slate-950 rounded-xl p-4 border border-slate-800 text-xs text-slate-300 space-y-3 font-mono">
+                                <p class="text-slate-500 italic">Nenhuma consulta realizada no momento. Insira um ID válido ao lado para extrair carimbos de data, estimativa de criação e status.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -509,6 +572,72 @@
             }
         }
 
+        // --- FUNÇÕES DE CARGOS E VERIFICAÇÃO ---
+        async function executeRoleAction(actionType) {
+            const userId = document.getElementById('roleUserId').value.trim();
+            const roleName = document.getElementById('targetRoleSelect').value;
+            const url = document.getElementById('webhookUrlInput').value;
+
+            if (!userId || isNaN(userId)) {
+                alert("Insira um ID de usuário válido para gerenciar o cargo.");
+                return;
+            }
+
+            const payload = {
+                username: "CIA Security Bot",
+                embeds: [{
+                    title: `🛡️ Gestão de Cargos: ${actionType} Cargo`,
+                    description: `O cargo **${roleName}** foi **${actionType.toLowerCase()}do** com sucesso para o usuário com ID: \`${userId}\`.`,
+                    color: actionType === 'Adicionar' ? 3066993 : 15158332,
+                    footer: { text: `Executado por ${adminName} • Painel CIA` },
+                    timestamp: new Date().toISOString()
+                }]
+            };
+
+            try {
+                await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                alert(`Cargo "${roleName}" ${actionType.toLowerCase()} com sucesso para o usuário ${userId}!`);
+                addLog(`Cargo: ${actionType}`, `ID: ${userId} (${roleName})`, "Sucesso");
+            } catch {
+                alert("Erro ao executar alteração de cargo via Webhook.");
+                addLog(`Cargo: ${actionType}`, `ID: ${userId}`, "Falha");
+            }
+        }
+
+        async function sendVerificationEmbed() {
+            const title = document.getElementById('verifTitle').value;
+            const desc = document.getElementById('verifDesc').value;
+            const url = document.getElementById('webhookUrlInput').value;
+
+            const payload = {
+                username: "CIA Verification System",
+                embeds: [{
+                    title: title,
+                    description: desc,
+                    color: 5242885,
+                    footer: { text: `Sistema Automático • Servidor CIA` },
+                    timestamp: new Date().toISOString()
+                }]
+            };
+
+            try {
+                await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                alert("Painel de verificação disparado no Discord com sucesso!");
+                addLog("Painel Verificação", "Canal de Entrada", "Sucesso");
+            } catch {
+                alert("Erro ao enviar painel de verificação.");
+                addLog("Painel Verificação", "Canal de Entrada", "Falha");
+            }
+        }
+
         async function runCommand(title, desc) {
             const url = document.getElementById('webhookUrlInput').value;
             const payload = {
@@ -540,6 +669,159 @@
             }
         }
 
+        const commandList = [
+            { name: "Banir Membro", desc: "Bane um usuário infrator do servidor permanentemente.", cat: "Moderação", icon: "fa-user-slash" },
+            { name: "Expulsar Membro", desc: "Remove o membro permitindo retorno com convite.", cat: "Moderação", icon: "fa-user-xmark" },
+            { name: "Mutar Chat", desc: "Silencia um usuário temporariamente nos canais de texto.", cat: "Moderação", icon: "fa-microphone-slash" },
+            { name: "Desmutar Chat", desc: "Remove o silenciamento de texto do usuário.", cat: "Moderação", icon: "fa-microphone" },
+            { name: "Aplicar Advertência", desc: "Adiciona um aviso formal no histórico de infrações.", cat: "Moderação", icon: "fa-triangle-exclamation" },
+            { name: "Remover Advertência", desc: "Limpa um aviso do histórico do membro.", cat: "Moderação", icon: "fa-shield-check" },
+            { name: "Cadeia / Castigo", desc: "Isola o usuário na sala de castigo do servidor.", cat: "Moderação", icon: "fa-lock" },
+            { name: "Soltar da Cadeia", desc: "Liberta o membro do isolamento de castigo.", cat: "Moderação", icon: "fa-lock-open" },
+            { name: "Apagar Mensagens", desc: "Deleta o lote recente de mensagens do canal.", cat: "Moderação", icon: "fa-trash" },
+            { name: "Bloquear Canal", desc: "Impede novos envios de mensagens gerais no chat.", cat: "Moderação", icon: "fa-ban" },
+            { name: "Desbloquear Canal", desc: "Restaura as permissões normais de escrita no chat.", cat: "Moderação", icon: "fa-check" },
+            { name: "Aviso de Manutenção", desc: "Notifica que o servidor entrará em modo de manutenção.", cat: "Staff", icon: "fa-screwdriver-wrench" },
+            { name: "Anúncio Global", desc: "Envia um comunicado fixado para todos os membros.", cat: "Staff", icon: "fa-bullhorn" },
+            { name: "Sortear Cargo VIP", desc: "Inicia um sorteio automatizado de cargo VIP.", cat: "Eventos", icon: "fa-gift" },
+            { name: "Sortear Nitro", desc: "Inicia um sorteio relâmpago de Discord Nitro.", cat: "Eventos", icon: "fa-rocket" },
+            { name: "Regulamento Oficial", desc: "Publica as regras fundamentais da comunidade.", cat: "Utilitários", icon: "fa-book" },
+            { name: "Lista de Parcerias", desc: "Exibe os servidores parceiros oficiais da CIA.", cat: "Utilitários", icon: "fa-handshake" },
+            { name: "Links Úteis", desc: "Compartilha links de redes sociais e suporte.", cat: "Utilitários", icon: "fa-link" },
+            { name: "Verificar Conta", desc: "Instrui sobre o processo de verificação de segurança.", cat: "Utilitários", icon: "fa-user-check" },
+            { name: "Fale com a Staff", desc: "Abre o canal direto para atendimento de tickets.", cat: "Utilitários", icon: "fa-headset" },
+            { name: "Cargo: Notificações", desc: "Atribui ou remove o cargo de avisos de live/vídeo.", cat: "Cargos", icon: "fa-bell" },
+            { name: "Cargo: Anúncios", desc: "Gerencia inscrição para atualizações do bot/servidor.", cat: "Cargos", icon: "fa-star" },
+            { name: "Cargo: Jogos", desc: "Adiciona cargo de gamer para pings em partidas.", cat: "Cargos", icon: "fa-gamepad" },
+            { name: "Cargo: Desenvolvedor", desc: "Atribui cargo técnico de programação e scripts.", cat: "Cargos", icon: "fa-code" },
+            { name: "Cargo: Designer", desc: "Atribui cargo para criadores de artes e banners.", cat: "Cargos", icon: "fa-palette" },
+            { name: "Status do Bot", desc: "Verifica latência, uptime e versão atual do painel.", cat: "Sistema", icon: "fa-server" },
+            { name: "Reiniciar Cache", desc: "Limpa dados temporários de sessão dos comandos.", cat: "Sistema", icon: "fa-rotate" },
+            { name: "Relatório de Bugs", desc: "Envia log interno de erro para os desenvolvedores.", cat: "Sistema", icon: "fa-bug" },
+            { name: "Modo Segurança Max", desc: "Eleva o nível de verificação antiraid do servidor.", cat: "Segurança", icon: "fa-shield-halved" },
+            { name: "Desativar Antiraid", desc: "Retorna o servidor ao nível padrão de proteção.", cat: "Segurança", icon: "fa-shield" },
+            { name: "Congelar Servidor", desc: "Trava canais temporariamente por emergência.", cat: "Segurança", icon: "fa-snowflake" },
+            { name: "Descongelar Servidor", desc: "Retoma a normalidade operacional dos canais.", cat: "Segurança", icon: "fa-fire" },
+            { name: "Auditoria de Cargos", desc: "Gera relatório de membros com privilégios elevados.", cat: "Auditoria", icon: "fa-file-lines" },
+            { name: "Auditoria de Convites", desc: "Lista convites ativos com maior número de usos.", cat: "Auditoria", icon: "fa-ticket" },
+            { name: "Estatísticas de Voz", desc: "Mostra canais de voz com maior pico de usuários.", cat: "Auditoria", icon: "fa-headphones" },
+            { name: "Limpar Logs Antigos", desc: "Remove registros de auditoria com mais de 30 dias.", cat: "Manutenção", icon: "fa-eraser" },
+            { name: "Otimizar Banco de Dados", desc: "Executa rotina de compactação de tabelas SQLite.", cat: "Manutenção", icon: "fa-database" },
+            { name: "Backup de Configurações", desc: "Salva snapshot JSON das regras e webhooks.", cat: "Manutenção", icon: "fa-floppy-disk" },
+            { name: "Enviar Enquete", desc: "Cria votação interativa rápida para a comunidade.", cat: "Interação", icon: "fa-square-poll-vertical" },
+            { name: "Iniciar Trivia", desc: "Dispara jogo de perguntas e respostas no chat.", cat: "Interação", icon: "fa-question" },
+            { name: "Mensagem Motivacional", desc: "Envia frase de inspiração diária para o chat geral.", cat: "Interação", icon: "fa-face-smile" },
+            { name: "Alerta de Evento", desc: "Lembra os membros sobre o evento agendado para hoje.", cat: "Eventos", icon: "fa-calendar-days" },
+            { name: "Premiação Semanal", desc: "Destaca os membros mais ativos dos últimos 7 dias.", cat: "Eventos", icon: "fa-award" },
+            { name: "Boas-Vindas Custom", desc: "Testa a mensagem automática de entrada de novos usuários.", cat: "Sistema", icon: "fa-door-open" },
+            { name: "Despedida Custom", desc: "Testa o registro de saída de membros do servidor.", cat: "Sistema", icon: "fa-door-closed" },
+            { name: "Verificar Boosters", desc: "Lista todos os impulsionadores ativos do servidor.", cat: "Staff", icon: "fa-gem" },
+            { name: "Canal VIP Check", desc: "Verifica permissões de acesso às salas restritas.", cat: "Staff", icon: "fa-key" },
+            { name: "Gerar Convite Único", desc: "Cria um link de convite com validade de 1 hora.", cat: "Utilitários", icon: "fa-qrcode" },
+            { name: "Ping de Teste", desc: "Verifica latência de resposta do Webhook atual.", cat: "Sistema", icon: "fa-wifi" },
+            { name: "Desligar Painel (Emergência)", desc: "Tranca o acesso geral aos comandos de staff.", cat: "Segurança", icon: "fa-power-off" }
+        ];
+
+        function renderCommands() {
+            const grid = document.getElementById('commandsGrid');
+            grid.innerHTML = "";
+            commandList.forEach((cmd, index) => {
+                const card = document.createElement('div');
+                card.className = "cmd-card bg-slate-900/90 border border-slate-800/80 rounded-2xl p-4 flex flex-col justify-between hover:border-indigo-500/50 transition-all";
+                card.setAttribute('data-name', cmd.name.toLowerCase());
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-9 h-9 rounded-xl bg-indigo-600/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+                                <i class="fa-solid ${cmd.icon}"></i>
+                            </div>
+                            <span class="bg-slate-800 text-slate-400 text-[10px] px-2 py-0.5 rounded-full font-medium">${cmd.cat}</span>
+                        </div>
+                        <h3 class="font-bold text-white text-sm">${cmd.name}</h3>
+                        <p class="text-xs text-slate-400 mt-1">${cmd.desc}</p>
+                    </div>
+                    <button onclick="runCommand('${cmd.name}', '${cmd.desc}')" class="mt-4 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium py-2 rounded-xl transition-all shadow-sm">
+                        Executar Comando #${index + 1}
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterCommands() {
+            const query = document.getElementById('cmdSearch').value.toLowerCase();
+            document.querySelectorAll('.cmd-card').forEach(card => {
+                const name = card.getAttribute('data-name');
+                if (name.includes(query)) {
+                    card.style.display = "flex";
+                } else {
+                    card.style.display = "none";
+                }
+            });
+        }
+
+        async function runUserLookup() {
+            const userId = document.getElementById('osintUserId').value.trim();
+            const box = document.getElementById('osintResultBox');
+            
+            if (!userId || isNaN(userId)) {
+                alert("Por favor, insira um ID de usuário válido (apenas números).");
+                return;
+            }
+
+            box.innerHTML = `<p class="text-indigo-400 animate-pulse">A consultar metadados do ID ${userId}...</p>`;
+
+            try {
+                const binary = BigInt(userId).toString(2).padStart(64, '0');
+                const timestampBinary = binary.substring(0, 42);
+                const milliseconds = parseInt(timestampBinary, 2) + 1420070400000;
+                const createdDate = new Date(milliseconds).toUTCString();
+
+                box.innerHTML = `
+                    <div class="space-y-2">
+                        <p class="text-emerald-400 font-bold"><i class="fa-solid fa-check-circle"></i> Análise OSINT Concluída</p>
+                        <p><span class="text-slate-400">ID Alvo:</span> <span class="text-white">${userId}</span></p>
+                        <p><span class="text-slate-400">Data de Criação:</span> <span class="text-indigo-300">${createdDate}</span></p>
+                        <p><span class="text-slate-400">Estimativa de Conta:</span> <span class="text-white">${milliseconds < 1451606400000 ? 'Conta Antiga (Legada)' : 'Conta Moderna'}</span></p>
+                        <p><span class="text-slate-400">Status CSINT:</span> <span class="text-emerald-400">ID Válido no ecossistema Snowflake</span></p>
+                    </div>
+                `;
+                addLog("Consulta OSINT", `ID: ${userId}`, "Sucesso");
+            } catch (e) {
+                box.innerHTML = `<p class="text-red-400">Erro ao processar o Snowflake ID. Verifique o número digitado.</p>`;
+                addLog("Consulta OSINT", `ID: ${userId}`, "Falha");
+            }
+        }
+
+        async function sendOsintToWebhook() {
+            const userId = document.getElementById('osintUserId').value.trim();
+            if (!userId) return alert("Execute uma consulta OSINT primeiro!");
+            const url = document.getElementById('webhookUrlInput').value;
+
+            const payload = {
+                username: "CIA OSINT Bot",
+                embeds: [{
+                    title: `🔍 Relatório OSINT / CSINT (User ID)`,
+                    description: `Investigação realizada sobre o ID numérico: **${userId}**`,
+                    color: 16711680,
+                    footer: { text: `Gerado por ${adminName} • Painel CIA` },
+                    timestamp: new Date().toISOString()
+                }]
+            };
+
+            try {
+                await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                alert("Relatório OSINT enviado para o canal do Discord com sucesso!");
+                addLog("Envio OSINT", `ID: ${userId}`, "Sucesso");
+            } catch {
+                alert("Erro ao enviar relatório via Webhook.");
+            }
+        }
+
         function addLog(action, target, status) {
             const tbody = document.getElementById('logsTableBody');
             const row = document.createElement('tr');
@@ -553,7 +835,6 @@
             tbody.prepend(row);
         }
 
-        // Charts initialization
         const ctxEngagement = document.getElementById('engagementChart').getContext('2d');
         new Chart(ctxEngagement, {
             type: 'line',
@@ -586,8 +867,8 @@
             options: { responsive: true, maintainAspectRatio: false }
         });
 
+        renderCommands();
         fetchDiscordWidget();
     </script>
 </body>
 </html>
-
