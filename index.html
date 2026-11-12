@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo - CIA</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col transition-all duration-300 z-30">
+            <div class="p-5 flex items-center justify-between border-b border-slate-800">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-indigo-500/30">
+                        <i class="fa-brands fa-discord"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-base tracking-tight">CIA Server</h1>
+                        <p class="text-xs text-slate-400">Painel Oficial</p>
+                    </div>
+                </div>
+            </div>
+            <nav class="flex-1 p-4 space-y-1.5 overflow-y-auto">
+                <a href="#overview" onclick="switchTab('overview')" class="nav-item flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 transition-all">
+                    <i class="fa-solid fa-chart-pie w-5"></i>
+                    <span>Visão Geral</span>
+                </a>
+                <a href="#discord" onclick="switchTab('discord')" class="nav-item flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 transition-all">
+                    <i class="fa-brands fa-discord w-5"></i>
+                    <span>Conexão & Webhook</span>
+                </a>
+                <a href="#commands" onclick="switchTab('commands')" class="nav-item flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 transition-all">
+                    <i class="fa-solid fa-terminal w-5"></i>
+                    <span>Comandos da Staff</span>
+                </a>
+                <a href="#analytics" onclick="switchTab('analytics')" class="nav-item flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 transition-all">
+                    <i class="fa-solid fa-chart-line w-5"></i>
+                    <span>Estatísticas</span>
+                </a>
+                <a href="#logs" onclick="switchTab('logs')" class="nav-item flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 transition-all">
+                    <i class="fa-solid fa-shield-halved w-5"></i>
+                    <span>Logs de Auditoria</span>
+                </a>
+            </nav>
+            <div class="p-4 border-t border-slate-800">
+                <a href="https://discord.gg/cia4" target="_blank" class="flex items-center justify-center space-x-2 w-full bg-indigo-600 hover:bg-indigo-500 text-white py-2.5 px-4 rounded-xl text-sm font-semibold transition-all shadow-md">
+                    <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+                    <span>Entrar no Discord</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden bg-slate-950">
+            <!-- Topbar -->
+            <header class="h-16 bg-slate-900/80 backdrop-blur border-b border-slate-800 flex items-center justify-between px-6 z-20">
+                <div class="flex items-center space-x-4 flex-1 max-w-xl">
+                    <button onclick="toggleSidebar()" class="text-slate-400 hover:text-slate-200">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                    <div class="relative w-full">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-500">
+                            <i class="fa-solid fa-bullhorn text-xs"></i>
+                        </span>
+                        <input type="text" id="quickMsgInput" placeholder="Envio rápido via Webhook da CIA..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-4 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 transition-all">
+                    </div>
+                    <button onclick="quickSendWebhook()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-xl text-xs font-medium transition-all shadow-sm whitespace-nowrap">
+                        Enviar
+                    </button>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="toggleTheme()" class="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 hover:text-white transition-all">
+                        <i id="themeIcon" class="fa-solid fa-sun text-sm"></i>
+                    </button>
+                    <div class="flex items-center space-x-3 pl-3 border-l border-slate-800">
+                        <button onclick="changeAdminName()" class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-white text-sm hover:bg-indigo-500 transition-all shadow-sm" title="Alterar Nome do Admin">ADM</button>
+                        <div class="hidden md:block text-left">
+                            <div id="welcomeAdminText" class="text-xs font-semibold text-slate-200">Bem-vindo de volta, mestre, Administrador</div>
+                            <div class="text-[10px] text-emerald-400 flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Online no Servidor CIA
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <main class="flex-1 overflow-y-auto p-6 space-y-6">
+                <!-- TAB: OVERVIEW -->
+                <div id="tab-overview" class="space-y-6 tab-content">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div>
+                            <h2 class="text-xl font-bold tracking-tight text-white">Dashboard da Comunidade</h2>
+                            <p class="text-xs text-slate-400">Visão geral do servidor <a href="https://discord.gg/cia4" target="_blank" class="text-indigo-400 underline">discord.gg/cia4</a>.</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="fetchDiscordWidget()" class="bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-200 px-3.5 py-2 rounded-xl text-xs font-medium transition-all flex items-center gap-2">
+                                <i class="fa-solid fa-rotate text-indigo-400" id="syncIcon"></i> Atualizar Dados
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- KPIs -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-5 shadow-sm">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Membros Totais</p>
+                                    <h3 id="kpiMembersTotal" class="text-2xl font-bold text-white mt-1">Carregando...</h3>
+                                </div>
+                                <div class="w-10 h-10 rounded-xl bg-indigo-600/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+                                    <i class="fa-solid fa-users"></i>
+                                </div>
+                            </div>
+                            <div class="mt-3 flex items-center text-[11px] text-emerald-400 font-medium">
+                                <i class="fa-solid fa-arrow-trend-up mr-1"></i> Sincronizado com discord.gg/cia4
+                            </div>
+                        </div>
+                        <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-5 shadow-sm">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Membros Online</p>
+                                    <h3 id="kpiMembersOnline" class="text-2xl font-bold text-white mt-1">Carregando...</h3>
+                                </div>
+                                <div class="w-10 h-10 rounded-xl bg-emerald-600/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                                    <i class="fa-solid fa-user-check"></i>
+                                </div>
+                            </div>
+                            <div class="mt-3 flex items-center text-[11px] text-emerald-400 font-medium">
+                                <i class="fa-solid fa-bolt mr-1"></i> Atividade alta agora
+                            </div>
+                        </div>
+                        <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-5 shadow-sm">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Mensagens / Dia</p>
+                                    <h3 class="text-2xl font-bold text-white mt-1">4,820</h3>
+                                </div>
+                                <div class="w-10 h-10 rounded-xl bg-blue-600/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+                                    <i class="fa-solid fa-comments"></i>
+                                </div>
+                            </div>
+                            <div class="mt-3 flex items-center text-[11px] text-emerald-400 font-medium">
+                                <i class="fa-solid fa-arrow-trend-up mr-1"></i> +14.2% esta semana
+                            </div>
+                        </div>
+                        <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-5 shadow-sm">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Boosts Ativos</p>
+                                    <h3 id="kpiBoosts" class="text-2xl font-bold text-white mt-1">Nível 2</h3>
+                                </div>
+                                <div class="w-10 h-10 rounded-xl bg-pink-600/10 border border-pink-500/20 flex items-center justify-center text-pink-400">
+                                    <i class="fa-solid fa-rocket"></i>
+                                </div>
+                            </div>
+                            <div class="mt-3 flex items-center text-[11px] text-pink-400 font-medium">
+                                <i class="fa-solid fa-gem mr-1"></i> Servidor Impulsionado
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2 bg-slate-900/90 border border-slate-800/80 rounded-2xl p-5">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="font-bold text-sm text-white">Engajamento Semanal do Servidor</h3>
+                                <span class="text-xs text-slate-400">Mensagens & Entradas</span>
+                            </div>
+                            <div class="h-64">
+                                <canvas id="engagementChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-5 flex flex-col">
+                            <h3 class="font-bold text-sm text-white mb-4">Status do Convite CIA</h3>
+                            <div class="flex-1 flex flex-col items-center justify-center text-center p-4 bg-slate-950/50 rounded-xl border border-slate-800/60">
+                                <div class="w-16 h-16 rounded-2xl bg-indigo-600 flex items-center justify-center text-white text-2xl font-bold shadow-lg mb-3">
+                                    <i class="fa-brands fa-discord"></i>
+                                </div>
+                                <h4 class="font-bold text-white text-sm">discord.gg/cia4</h4>
+                                <p class="text-xs text-slate-400 mt-1">Servidor verificado e operando normalmente.</p>
+                                <a href="https://discord.gg/cia4" target="_blank" class="mt-4 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold py-2 px-4 rounded-xl transition-all">
+                                    Acessar Servidor
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB: DISCORD & WEBHOOK -->
+                <div id="tab-discord" class="space-y-6 tab-content hidden">
+                    <div>
+                        <h2 class="text-xl font-bold tracking-tight text-white">Gerenciamento de Webhook & Conexão</h2>
+                        <p class="text-xs text-slate-400">Envie mensagens customizadas direto para o canal da CIA no Discord.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Config Webhook -->
+                        <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-5 space-y-4">
+                            <div class="flex justify-between items-center">
+                                <h3 class="font-bold text-sm text-white flex items-center gap-2">
+                                    <i class="fa-solid fa-link text-indigo-400"></i> Configuração do Webhook
+                                </h3>
+                                <button onclick="resetDefaultWebhook()" class="text-[11px] text-indigo-400 hover:underline">Restaurar Padrão CIA</button>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-400 mb-1">URL do Webhook</label>
+                                <div class="flex gap-2">
+                                    <input type="password" id="webhookUrlInput" class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
+                                    <button onclick="toggleWebhookVisibility()" class="bg-slate-800 px-3 py-2 rounded-xl text-slate-300 hover:text-white text-xs">
+                                        <i class="fa-solid fa-eye" id="eyeIcon"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="testWebhookGet()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium px-4 py-2 rounded-xl transition-all">
+                                    Testar Conexão (GET)
+                                </button>
+                                <span id="webhookStatusText" class="text-xs self-center text-slate-400">Pronto para uso</span>
+                            </div>
+
+                            <hr class="border-slate-800 my-2">
+
+                            <h3 class="font-bold text-sm text-white flex items-center gap-2 pt-2">
+                                <i class="fa-solid fa-hammer text-indigo-400"></i> Construtor de Embeds
+                            </h3>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-400 mb-1">Título do Embed</label>
+                                <input type="text" id="embedTitle" placeholder="Ex: Anúncio Importante da Staff" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-400 mb-1">Descrição / Mensagem</label>
+                                <textarea id="embedDesc" rows="3" placeholder="Escreva o conteúdo do aviso aqui..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500"></textarea>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-400 mb-1">Cor do Lateral (Hex)</label>
+                                    <input type="text" id="embedColor" value="#4f46e5" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-400 mb-1">Nome do Bot</label>
+                                    <input type="text" id="botName" value="CIA Bot" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
+                                </div>
+                            </div>
+                            <button onclick="sendCustomEmbed()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2.5 rounded-xl text-xs transition-all shadow-md shadow-indigo-600/20">
+                                Enviar Embed para o Servidor CIA
+                            </button>
+                        </div>
+
+                        <!-- Preview Discord -->
+                        <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-5 flex flex-col">
+                            <h3 class="font-bold text-sm text-white mb-4">Pré-visualização no Discord</h3>
+                            <div class="flex-1 bg-[#313338] rounded-xl p-4 flex flex-col justify-center text-slate-100 font-sans shadow-inner">
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-white shrink-0">
+                                        CIA
+                                    </div>
+                                    <div class="flex-1 space-y-1">
+                   
